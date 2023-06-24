@@ -1,5 +1,8 @@
 using BlazorApp1.Data;
 using Microsoft.Extensions.Hosting;
+using Orleans.Configuration;
+using Orleans.Versions.Compatibility;
+using Orleans.Versions.Selector;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,11 @@ builder.Host.UseOrleans(siloBuilder =>
 {
     siloBuilder.UseLocalhostClustering();
     siloBuilder.UseSignalR(); // Adds ability #1 and #2 to Orleans.
+    siloBuilder.Configure<GrainVersioningOptions>(options =>
+    {
+        options.DefaultCompatibilityStrategy = nameof(StrictVersionCompatible);
+        options.DefaultVersionSelectorStrategy = nameof(LatestVersion);
+    });
     siloBuilder.UseDashboard(x => x.HostSelf = true);
 });
 
